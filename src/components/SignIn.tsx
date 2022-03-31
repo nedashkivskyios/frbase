@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {useContext} from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,7 +12,9 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {createTheme, ThemeProvider} from '@mui/material/styles';
+import {AppContext} from "../index";
+import {signInWithPopup} from 'firebase/auth';
 
 function Copyright(props: any) {
   return (
@@ -29,6 +32,29 @@ function Copyright(props: any) {
 const theme = createTheme();
 
 export const SignIn = () => {
+  const {auth, provider} = useContext(AppContext)
+  const login = async () => {
+    provider.setCustomParameters({prompt: 'select_account'});
+    signInWithPopup(auth, provider)
+      .then(async result => {
+        // This gives you a Google Access Token. You can use it to access the Google API.
+        const user = result.user;
+        console.log(user)
+
+      })
+      .catch(error => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // The email of the user's account used.
+        const email = error.email;
+        // The AuthCredential type that was used.
+
+        console.log(errorCode, errorMessage, email)
+      })
+
+  }
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -41,7 +67,7 @@ export const SignIn = () => {
   return (
     <ThemeProvider theme={theme}>
       <Container component="main" maxWidth="xs">
-        <CssBaseline />
+        <CssBaseline/>
         <Box
           sx={{
             marginTop: 8,
@@ -50,13 +76,13 @@ export const SignIn = () => {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+          <Avatar sx={{m: 1, bgcolor: 'secondary.main'}}>
+            <LockOutlinedIcon/>
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
             <TextField
               margin="normal"
               required
@@ -78,16 +104,25 @@ export const SignIn = () => {
               autoComplete="current-password"
             />
             <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
+              control={<Checkbox value="remember" color="primary"/>}
               label="Remember me"
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{mt: 3, mb: 2}}
             >
               Sign In
+            </Button>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{mt: 3, mb: 2}}
+              onClick={login}
+            >
+              Sign In with Google
             </Button>
             <Grid container>
               <Grid item xs>
@@ -103,7 +138,7 @@ export const SignIn = () => {
             </Grid>
           </Box>
         </Box>
-        <Copyright sx={{ mt: 8, mb: 4 }} />
+        <Copyright sx={{mt: 8, mb: 4}}/>
       </Container>
     </ThemeProvider>
   );

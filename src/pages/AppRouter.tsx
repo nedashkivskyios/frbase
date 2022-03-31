@@ -1,12 +1,15 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Navigate, Route, Routes} from 'react-router-dom';
 import {CHAT_PATH, SIGN_IN_PATH, SIGN_UP_PATH} from "../config/constants";
 import {Chat} from "../components/Chat";
 import {SignIn} from "../components/SignIn";
 import {SignUp} from "../components/SignUp";
+import {AppContext} from "../index";
+import {useAuthState} from "react-firebase-hooks/auth";
 
 export const AppRouter = () => {
-  const user = false
+  const {auth} = useContext(AppContext)
+  const [user] = useAuthState(auth)
   if (user) {
     return (
       <Routes>

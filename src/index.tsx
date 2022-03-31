@@ -1,12 +1,16 @@
-import React from 'react';
+import React, {createContext} from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import {initializeApp} from "firebase/app";
 import {BrowserRouter} from "react-router-dom";
+import {initializeApp} from "firebase/app";
+import { getFirestore } from 'firebase/firestore';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
-const frbase = initializeApp({
+
+
+const app = initializeApp({
   apiKey: "AIzaSyD0oTmjYyYz20j-u8iETi96ZkVS7T_HpiQ",
   authDomain: "fir-test-12705.firebaseapp.com",
   databaseURL: "https://fir-test-12705-default-rtdb.europe-west1.firebasedatabase.app",
@@ -17,10 +21,22 @@ const frbase = initializeApp({
   measurementId: "G-68NRPYYJEP",
 });
 
+export const AppContext = createContext({} as any)
+const auth = getAuth()
+const db = getFirestore(app)
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
+
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
-      <App/>
+      <AppContext.Provider value={{
+        auth,
+        db,
+        provider,
+      }}>
+        <App/>
+      </AppContext.Provider>
     </BrowserRouter>
   </React.StrictMode>,
   document.getElementById('root'),
